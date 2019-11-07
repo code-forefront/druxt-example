@@ -1,6 +1,8 @@
-# druxt
+# druxt-example
 
-> Complete Nuxt layer consuming Drupal Rest API
+> Example of nuxt project embedding for now : 
+- druxt wich is a VueJS component consuming 
+- drupalBuilder that pull content from drupal, create a display tree against a uiconfig
 
 ## Build Setup
 
