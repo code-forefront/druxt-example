@@ -2,11 +2,12 @@
   <div>
     <h1>{{ title }}</h1>
     <p>{{ pictureTitle }}</p>
-    <druxt-slot :ui-content-node="content" />
+    <druxt :ui-content-node="content" />
   </div>
 </template>
 
 <script>
+import DruxtNode from 'assets/helpers.js'
 export default {
   props: {
     title: {
@@ -18,7 +19,7 @@ export default {
       default: null
     },
     content: {
-      type: Object,
+      type: DruxtNode,
       default: null
     }
   }

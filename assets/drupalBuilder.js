@@ -1,3 +1,6 @@
+import _ from 'lodash'
+import DruxtNode from '@/assets/helpers.js'
+
 // eslint-disable-next-line
 const getDrupalContent = async function (slug) {
   return {
@@ -13,7 +16,7 @@ const getDrupalContent = async function (slug) {
             title: 'Picture title'
           }
         },
-        filed_author: {
+        field_author: {
           type: 'node--author',
           attributes: {
             title: 'Author title'
@@ -53,20 +56,38 @@ const getUiConfig = async function (uiConfigName) {
     }
   }
 }
-const mergeDrupalDataAndUiConfig = function (drupalContent, uiConfig) {
-  return {
-    name: 'basic-layer',
-    props: {
-      title: 'Mon titre',
-      pictureTitle: 'Picture title',
-      content: {
-        name: 'author',
-        props: {
-          title: 'Author title'
-        }
-      }
+const getAttributes = function (path, tree) {
+  const nodes = path.split('.')
+  let newTree = tree
+  _.forEach(nodes, function (node) {
+    switch (node) {
+      case '/root':
+        node = 'data'
+        break
+      case '_rels':
+        node = 'relationships'
+        break
     }
-  }
+    newTree = newTree[node]
+  })
+  return newTree
+}
+const mergeDrupalDataAndUiConfig = function (drupalContent, uiConfig) {
+  const compName = uiConfig.name
+  const props = {}
+  _.forEach(uiConfig.props, function (value, key) {
+    const node = value.node
+    if (value.mount) {
+      _.forEach(value.mount, function (val) {
+        props[key] = mergeDrupalDataAndUiConfig(drupalContent, val)
+      })
+    } else {
+      const contentVal = getAttributes(node, drupalContent)
+      const attribute = value.attr
+      props[key] = contentVal.attributes[attribute]
+    }
+  })
+  return new DruxtNode(compName, props)
 }
 
 export default async function (slug, uiConfigName) {
