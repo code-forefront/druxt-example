@@ -1,9 +1,14 @@
 import _ from 'lodash'
 import DruxtNode from '@/assets/helpers.js'
+import getArticle from '@/assets/getArticle.js'
 
 // eslint-disable-next-line
-const getDrupalContent = async function (slug) {
+const getDrupalContent = async function (lang, slugg) {
+  const data = await getArticle(lang, slugg)
   return {
+    data
+  }
+  /* return {
     data: {
       type: 'node--article',
       attributes: {
@@ -24,7 +29,7 @@ const getDrupalContent = async function (slug) {
         }
       }
     }
-  }
+  } */
 }
 
 // eslint-disable-next-line
@@ -36,22 +41,9 @@ const getUiConfig = async function (uiConfigName) {
         node: '/root',
         attr: 'title'
       },
-      pictureTitle: {
-        node: '/root._rels.field_picture',
-        attr: 'title'
-      },
-      content: {
-        node: '/root._rels.field_author',
-        mount: [{
-          name: 'author',
-          condition: 'type=node--author',
-          props: {
-            title: {
-              node: '/root._rels.field_author',
-              attr: 'title'
-            }
-          }
-        }]
+      body: {
+        node: '/root',
+        attr: 'body'
       }
     }
   }
@@ -90,8 +82,8 @@ const mergeDrupalDataAndUiConfig = function (drupalContent, uiConfig) {
   return new DruxtNode(compName, props)
 }
 
-export default async function (slug, uiConfigName) {
-  const drupalContent = await getDrupalContent(slug)
+export default async function (lang, slugg, uiConfigName) {
+  const drupalContent = await getDrupalContent(lang, slugg)
   const uiConfig = await getUiConfig(uiConfigName)
   return mergeDrupalDataAndUiConfig(drupalContent, uiConfig)
 }
